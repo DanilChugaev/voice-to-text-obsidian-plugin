@@ -45,8 +45,6 @@ export default class VoiceToTextPlugin extends Plugin {
 				}
 			})
 		);
-
-		this.addStyle();
 	}
 
 	setInterfacePluginLang() {
@@ -148,29 +146,5 @@ export default class VoiceToTextPlugin extends Plugin {
 
 			recorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }));
 		});
-	}
-
-	addStyle() {
-		const style = document.createElement('style');
-		style.textContent = `
-      .voice-to-text-toolbar {
-        padding: 5px;
-        background: var(--background-secondary);
-        border-bottom: 1px solid var(--background-modifier-border);
-      }
-      .voice-to-text-button {
-        padding: 4px 8px;
-        background: var(--interactive-accent);
-        color: var(--text-on-accent);
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 14px;
-      }
-      .voice-to-text-button:hover {
-        background: var(--interactive-accent-hover);
-      }
-    `;
-		document.head.appendChild(style);
 	}
 }

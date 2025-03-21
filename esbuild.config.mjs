@@ -1,6 +1,7 @@
 import esbuild from "esbuild";
 import process from "process";
 import builtins from "builtin-modules";
+import { copyFile } from 'fs/promises';
 
 const banner =
 `/*
@@ -42,9 +43,18 @@ const context = await esbuild.context({
 	minify: isProd,
 });
 
+async function postBuild() {
+	await copyFile('src/transcribe.py', 'dist/transcribe.py');
+	await copyFile('src/styles.css', 'dist/styles.css');
+	await copyFile('manifest.json', 'dist/manifest.json');
+	console.log('Copied additional files to dist');
+}
+
 if (isProd) {
 	await context.rebuild();
+	await postBuild();
 	process.exit(0);
 } else {
 	await context.watch();
+	await postBuild();
 }
