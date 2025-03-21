@@ -11,6 +11,7 @@ const execPromise = promisify(exec);
 
 export default class VoiceToTextPlugin extends Plugin {
 	lang: Language = 'en';
+	plugin_path: string = '';
 	t: (key: TranslationKey) => string;
 	notify: (key: TranslationKey | string) => void;
 
@@ -21,6 +22,7 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	async onload() {
+		this.plugin_path = `${this.app.vault.adapter.basePath}/.obsidian/plugins/voice-to-text`;
 		this.setInterfacePluginLang();
 
 		logger('plugin started');
@@ -79,7 +81,7 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	async saveBlobAsWebMAudio(audioBlob: Blob): Promise<{ webmPath: string }> {
-		const webmPath = `${this.app.vault.adapter.basePath}/temp_audio.webm`;
+		const webmPath = `${this.plugin_path}/temp_audio.webm`;
 		const audioBuffer = Buffer.from(await audioBlob.arrayBuffer());
 		writeFileSync(webmPath, audioBuffer);
 
@@ -88,7 +90,7 @@ export default class VoiceToTextPlugin extends Plugin {
 
 	async convertWebMAudioToWav(webmPath: string): Promise<{ wavPath: string }> {
 		// Converting WebM to WAV (mono, 16-bit, 16 kHz)
-		const wavPath = `${this.app.vault.adapter.basePath}/temp_audio.wav`;
+		const wavPath = `${this.plugin_path}/temp_audio.wav`;
 		const ffmpegPath = '/opt/homebrew/bin/ffmpeg';
 		await execPromise(`${ffmpegPath} -y -i "${webmPath}" -acodec pcm_s16le -ac 1 -ar 16000 "${wavPath}"`);
 
@@ -98,8 +100,9 @@ export default class VoiceToTextPlugin extends Plugin {
 	async useVoskForConvertingVoiceToText(wavPath: string): Promise<{ text: string }>  {
 		// Start python script with Vosk processing
 		const pythonPath = '/Users/oskelly/.pyenv/shims/python';
-		const scriptPath = `${this.app.vault.adapter.basePath}/transcribe_vosk.py`;
-		const { stdout } = await execPromise(`${pythonPath} "${scriptPath}" "${wavPath}"`);
+		const scriptPath = `${this.plugin_path}/transcribe.py`;
+		const modelPath = `${this.plugin_path}/vosk-model`;
+		const { stdout } = await execPromise(`${pythonPath} "${scriptPath}" "${wavPath}" "${modelPath}"`);
 
 		const text = stdout.trim();
 
@@ -116,6 +119,8 @@ export default class VoiceToTextPlugin extends Plugin {
 			const { wavPath } = await this.convertWebMAudioToWav(webmPath);
 			const { text } = await this.useVoskForConvertingVoiceToText(wavPath);
 
+			// todo: вставлять в конец текста
+			// todo: перед вставкой добавить отступ и дату и время заметки
 			editor.replaceSelection(text || this.t('emptyTranscription'));
 
 			this.notify('transcriptionCompleted');
