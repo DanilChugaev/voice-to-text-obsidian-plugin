@@ -1,4 +1,4 @@
-import {Plugin, Notice, Editor, MarkdownView, App, PluginManifest} from 'obsidian';
+import { Plugin, Editor, MarkdownView, App, PluginManifest } from 'obsidian';
 import { writeFileSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
@@ -11,7 +11,7 @@ const execPromise = promisify(exec);
 
 export default class VoiceToTextPlugin extends Plugin {
 	lang: Language = 'en';
-	plugin_path: string = '';
+	plugin_path = '';
 	t: (key: TranslationKey) => string;
 	notify: (key: TranslationKey | string) => void;
 
@@ -60,7 +60,7 @@ export default class VoiceToTextPlugin extends Plugin {
 		logger('setting interface plugin lang: ', this.lang);
 	}
 
-	addButtonToEditor(markdownView: any) {
+	addButtonToEditor(markdownView: MarkdownView) {
 		const editorEl = markdownView.containerEl.querySelector('.markdown-source-view');
 		if (!editorEl || editorEl.querySelector('.voice-to-text-toolbar')) return;
 
