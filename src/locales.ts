@@ -1,7 +1,9 @@
 const en = {
-	recordAndTranscribeAudio: 'Record and Transcribe Audio',
+	recordAndTranscribeAudio: 'Record and transcribe audio',
+	stopRecordAndTranscribeAudio: 'Stop record and transcribe audio',
 	processingAudio: 'Processing audio...',
 	recordingStarted: 'Recording started...',
+	recordingStop: 'Recording stop',
 	transcriptionCompleted: 'Transcription completed!',
 	error: 'Error:',
 	emptyTranscription: 'Empty transcription'
@@ -9,8 +11,10 @@ const en = {
 
 const ru = {
 	recordAndTranscribeAudio: 'Запись и расшифровка аудио',
+	stopRecordAndTranscribeAudio: 'Остановить запись и расшифровать аудио',
 	processingAudio: 'Обрабатываем аудио...',
 	recordingStarted: 'Запись началась...',
+	recordingStop: 'Запись остановилась',
 	transcriptionCompleted: 'Расшифровка завершена!',
 	error: 'Ошибка:',
 	emptyTranscription: 'Пустая расшифровка'

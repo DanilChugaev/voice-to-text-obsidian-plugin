@@ -12,11 +12,14 @@ const execPromise = promisify(exec);
 export default class VoiceToTextPlugin extends Plugin {
 	lang: Language = 'en';
 	plugin_path = '';
+	is_recording = false;
+
 	t: (key: TranslationKey) => string;
 	notify: (key: TranslationKey | string) => void;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
+
 		this.t = t.bind(this);
 		this.notify = notify.bind(this);
 	}
@@ -41,7 +44,8 @@ export default class VoiceToTextPlugin extends Plugin {
 				const view = this.app.workspace.getActiveViewOfType(MarkdownView);
 
 				if (view) {
-					this.addButtonToEditor(view);
+					this.addRecordButtonToEditor(view);
+					this.addStopButtonToEditor(view);
 				}
 			})
 		);
@@ -58,12 +62,17 @@ export default class VoiceToTextPlugin extends Plugin {
 		logger('setting interface plugin lang: ', this.lang);
 	}
 
-	addButtonToEditor(markdownView: MarkdownView) {
+	addRecordButtonToEditor(markdownView: MarkdownView) {
 		const editorEl = markdownView.containerEl.querySelector('.markdown-source-view');
-		if (!editorEl || editorEl.querySelector('.voice-to-text-toolbar')) return;
 
-		const toolbar = document.createElement('div');
-		toolbar.className = 'voice-to-text-toolbar';
+		if (!editorEl) return;
+
+		let toolbar = editorEl.querySelector('.voice-to-text-toolbar');
+
+		if (!toolbar) {
+			toolbar = document.createElement('div');
+			toolbar.className = 'voice-to-text-toolbar';
+		}
 
 		const button = document.createElement('button');
 		button.textContent = '🎙️ Record';
@@ -76,6 +85,32 @@ export default class VoiceToTextPlugin extends Plugin {
 
 		toolbar.appendChild(button);
 		editorEl.insertBefore(toolbar, editorEl.firstChild);
+	}
+
+	addStopButtonToEditor(markdownView: MarkdownView) {
+		const editorEl = markdownView.containerEl.querySelector('.markdown-source-view');
+
+		if (!editorEl) return;
+
+		let toolbar = editorEl.querySelector('.voice-to-text-toolbar')
+
+		if (!toolbar) {
+			toolbar = document.createElement('div');
+			toolbar.className = 'voice-to-text-toolbar';
+		}
+
+		const button = document.createElement('button');
+		button.textContent = '⏹️ Stop';
+		button.className = 'voice-to-text-button';
+		button.title = this.t('stopRecordAndTranscribeAudio');
+
+		button.addEventListener('click', () => {
+			this.is_recording = false;
+			this.notify('recordingStop');
+		});
+
+		toolbar.appendChild(button);
+		editorEl.insertBefore(toolbar, editorEl.lastChild);
 	}
 
 	async saveBlobAsWebMAudio(audioBlob: Blob): Promise<{ webmPath: string }> {
@@ -130,6 +165,7 @@ export default class VoiceToTextPlugin extends Plugin {
 
 	async recordAudio(): Promise<Blob> {
 		this.notify('recordingStarted');
+		this.is_recording = true;
 
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 		const recorder = new MediaRecorder(stream);
@@ -139,10 +175,13 @@ export default class VoiceToTextPlugin extends Plugin {
 		recorder.start();
 
 		return new Promise((resolve) => {
-			setTimeout(() => {
-				recorder.stop();
-				stream.getTracks().forEach(track => track.stop());
-			}, 5000);
+			setInterval(() => {
+				// todo: тут обновлять время записи
+				if (!this.is_recording) {
+					recorder.stop();
+					stream.getTracks().forEach(track => track.stop());
+				}
+			}, 1000)
 
 			recorder.onstop = () => resolve(new Blob(chunks, { type: 'audio/webm' }));
 		});
