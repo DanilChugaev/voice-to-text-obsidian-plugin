@@ -152,7 +152,7 @@ export default class VoiceToTextPlugin extends Plugin {
 		const totalLines = editor.lineCount(); // Количество строк в документе
 		editor.setCursor({ line: totalLines, ch: 0 }); // Курсор в конец
 		const currentText = editor.getValue(); // Текущий текст
-		const newText = currentText.endsWith('\n') ? `\n${transcribedText}` : `\n\n${transcribedText}`;
+		const newText = `\n\n${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}\n${transcribedText}`;
 		editor.setValue(currentText + newText);
 	}
 
