@@ -40,5 +40,6 @@ export default defineConfig([globalIgnores(["**/node_modules/", "dist/"]), {
         "@typescript-eslint/ban-ts-comment": "off",
         "no-prototype-builtins": "off",
         "@typescript-eslint/no-empty-function": "off",
+        "@typescript-eslint/no-unused-vars": "off",
     },
 }]);

@@ -1,23 +1,21 @@
 const en = {
 	recordAndTranscribeAudio: 'Record and transcribe audio',
-	stopRecordAndTranscribeAudio: 'Stop record and transcribe audio',
-	processingAudio: 'Processing audio...',
-	recordingStarted: 'Recording started...',
-	recordingStop: 'Recording stop',
 	transcriptionCompleted: 'Transcription completed!',
 	error: 'Error:',
-	emptyTranscription: 'Empty transcription'
+	emptyTranscription: 'Empty transcription',
+	startRecording: 'Start recording',
+	recordingInProgress: 'Recording in progress...',
+	transcriptionInProgress: 'Transcription in progress...'
 } as const
 
 const ru = {
 	recordAndTranscribeAudio: 'Запись и расшифровка аудио',
-	stopRecordAndTranscribeAudio: 'Остановить запись и расшифровать аудио',
-	processingAudio: 'Обрабатываем аудио...',
-	recordingStarted: 'Запись началась...',
-	recordingStop: 'Запись остановилась',
 	transcriptionCompleted: 'Расшифровка завершена!',
 	error: 'Ошибка:',
-	emptyTranscription: 'Пустая расшифровка'
+	emptyTranscription: 'Пустая расшифровка',
+	startRecording: 'Начать запись',
+	recordingInProgress: 'Идет запись...',
+	transcriptionInProgress: 'Идет расшифровка...'
 } as const
 
 export const locales = {
