@@ -74,6 +74,8 @@
 }
 
 .voice-to-text-button--processing {
+	user-select: none;
+	pointer-events: none;
 	animation-name: voice-to-text-processing;
 }
 

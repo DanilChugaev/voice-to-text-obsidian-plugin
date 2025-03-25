@@ -41,8 +41,6 @@ export default class VoiceToTextPlugin extends Plugin {
 		});
 
 		this.registerEvent(
-			// todo: добавить события закрытия вкладки и остановки записи
-			// todo: записывать в ту заметку, на которой началась запись
 			this.app.workspace.on('file-open', (file) => {
 				const markdownView = this.app.workspace.getActiveViewOfType(MarkdownView);
 
@@ -54,7 +52,6 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	setInterfacePluginLang() {
-		// todo либо из настроек брать
 		if (this.app.setting.headerEl?.innerText === 'Настройки') {
 			this.lang = 'ru';
 		} else {
@@ -143,16 +140,14 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	insertTextToEditor(editor: Editor, text: string) {
-		// todo: вставлять в конец текста
-		// todo: перед вставкой добавить отступ и дату и время заметки
-		// editor. replaceSelection(text || this.t('emptyTranscription'));
-
 		const transcribedText = text || this.t('emptyTranscription');
-		// Перемещаем курсор в конец и добавляем текст с отступом
-		const totalLines = editor.lineCount(); // Количество строк в документе
-		editor.setCursor({ line: totalLines, ch: 0 }); // Курсор в конец
-		const currentText = editor.getValue(); // Текущий текст
+		const totalLines = editor.lineCount();
+
+		editor.setCursor({ line: totalLines, ch: 0 });
+
+		const currentText = editor.getValue();
 		const newText = `\n\n${new Date().toLocaleDateString()} - ${new Date().toLocaleTimeString()}\n${transcribedText}`;
+
 		editor.setValue(currentText + newText);
 	}
 
@@ -183,8 +178,6 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	async recordAudio(): Promise<Blob> {
-		// this.notify('recordingStarted');
-
 		const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 		const recorder = new MediaRecorder(stream);
 		const chunks: Blob[] = [];
@@ -194,7 +187,6 @@ export default class VoiceToTextPlugin extends Plugin {
 
 		return new Promise((resolve) => {
 			setInterval(() => {
-				// todo: тут обновлять время записи
 				if (!this.is_recording) {
 					recorder.stop();
 					stream.getTracks().forEach(track => track.stop());
