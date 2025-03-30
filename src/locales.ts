@@ -1,3 +1,5 @@
+import { moment } from 'obsidian';
+
 const en = {
 	recordAndTranscribeAudio: 'Record and transcribe audio',
 	transcriptionCompleted: 'Transcription completed!',
@@ -26,6 +28,8 @@ export const locales = {
 export type Language = keyof typeof locales;
 export type TranslationKey = keyof typeof en;
 
-export function t(this: { lang: Language }, key: TranslationKey): string {
-	return locales[this.lang][key];
+const locale: Language = moment.locale() as Language;
+
+export function t(key: TranslationKey): string {
+	return (locale && locales[locale][key]) || en[key];
 }

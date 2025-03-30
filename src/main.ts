@@ -18,13 +18,11 @@ export default class VoiceToTextPlugin extends Plugin {
 	record_button: HTMLButtonElement | null = null;
 	record_button_text: HTMLButtonElement | null = null;
 
-	t: (key: TranslationKey) => string;
 	notify: (key: TranslationKey | string) => void;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		this.t = t.bind(this);
 		this.notify = notify.bind(this);
 		this.plugin_path = `${this.app.vault.adapter.basePath}/.obsidian/plugins/voice-to-text`;
 	}
@@ -36,7 +34,7 @@ export default class VoiceToTextPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'record-and-transcribe',
-			name: this.t('recordAndTranscribeAudio'),
+			name: t('recordAndTranscribeAudio'),
 			editorCallback: async (editor: Editor) => this.transcribeAudio(editor),
 		});
 
@@ -83,7 +81,7 @@ export default class VoiceToTextPlugin extends Plugin {
 					<path d="M40.125 29.994c0-1.361-1.222-2.469-2.72-2.469-1.5 0-2.721 1.107-2.721 2.469 0 4.042-3.621 7.329-8.074 7.329h-5.257c-4.453 0-8.074-3.287-8.074-7.329 0-1.361-1.221-2.469-2.721-2.469-1.499 0-2.719 1.107-2.719 2.469 0 6.736 6.014 12.221 13.424 12.266v.766h-5.944c-1.499 0-2.72 1.107-2.72 2.47s1.221 2.47 2.72 2.47h17.325c1.5 0 2.721-1.107 2.721-2.47s-1.221-2.47-2.721-2.47h-5.942v-.766c7.409-.045 13.423-5.53 13.423-12.266z" fill="currentColor"/>
 				</svg>
 				<span class="voice-to-text-button__stop-icon"></span>
-				<span class="voice-to-text-button__recording-text">${this.t('startRecording')}</span>
+				<span class="voice-to-text-button__recording-text">${t('startRecording')}</span>
 			`;
 
 			this.record_button_text = this.record_button!.querySelector(`.voice-to-text-button__recording-text`);
@@ -91,7 +89,7 @@ export default class VoiceToTextPlugin extends Plugin {
 			this.record_button.addEventListener('click', () => {
 				if (!this.is_recording && !this.is_processing) {
 					this.record_button!.classList.add('voice-to-text-button--active');
-					this.record_button_text!.textContent = this.t('recordingInProgress');
+					this.record_button_text!.textContent = t('recordingInProgress');
 
 					this.transcribeAudio(markdownView.editor);
 
@@ -99,7 +97,7 @@ export default class VoiceToTextPlugin extends Plugin {
 				} else if (this.is_recording && !this.is_processing) {
 					this.record_button!.classList.remove('voice-to-text-button--active');
 					this.record_button!.classList.add('voice-to-text-button--processing');
-					this.record_button_text!.textContent = this.t('transcriptionInProgress');
+					this.record_button_text!.textContent = t('transcriptionInProgress');
 
 					this.is_recording = false;
 					this.is_processing = true;
@@ -140,7 +138,7 @@ export default class VoiceToTextPlugin extends Plugin {
 	}
 
 	insertTextToEditor(editor: Editor, text: string) {
-		const transcribedText = text || this.t('emptyTranscription');
+		const transcribedText = text || t('emptyTranscription');
 		const totalLines = editor.lineCount();
 
 		editor.setCursor({ line: totalLines, ch: 0 });
@@ -164,13 +162,13 @@ export default class VoiceToTextPlugin extends Plugin {
 			this.insertTextToEditor(editor, text);
 
 			this.record_button!.classList.remove('voice-to-text-button--processing');
-			this.record_button_text!.textContent = this.t('startRecording');
+			this.record_button_text!.textContent = t('startRecording');
 
 			this.is_processing = false;
 
 			this.notify('transcriptionCompleted');
 		} catch (error: any) {
-			this.notify(`${this.t('error')} ${error.message}`);
+			this.notify(`${t('error')} ${error.message}`);
 			console.error(error);
 
 			this.record_button!.classList.remove('voice-to-text-button--active', 'voice-to-text-button--processing');
