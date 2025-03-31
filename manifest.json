@@ -3,7 +3,8 @@
 	"name": "Voice to Text",
 	"version": "0.1.0",
 	"minAppVersion": "0.15.0",
-	"description": "Record audio and transcribe it using Web Speech API",
+	"description": "A plugin to record audio and transcribe it into text in Obsidian.",
 	"author": "Danil Chugaev",
-	"isDesktopOnly": false
+	"authorUrl": "https://github.com/DanilChugaev",
+	"isDesktopOnly": true
 }
