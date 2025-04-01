@@ -215,9 +215,3 @@ The plugin requires a Vosk model for speech recognition. Here’s how to downloa
 	- The default path in the plugin assumes the model is in the vault root. If you place it elsewhere, update the `modelPath` variable in `main.ts` to the full path (e.g., `C:\\path\\to\\vosk-model`).
 
 </details>
-
----
-
-## What’s Next?
-
-After installing these dependencies, proceed to the [Installation](#installation) section to set up the plugin itself!
