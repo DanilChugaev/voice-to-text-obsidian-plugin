@@ -1,11 +1,10 @@
-import { Plugin, Editor, MarkdownView, App, PluginManifest } from 'obsidian';
+import {Plugin, Editor, MarkdownView, App, PluginManifest, Notice} from 'obsidian';
 import { writeFileSync } from 'fs';
 import { exec } from 'child_process';
 import { promisify } from 'util';
 
-import { Language, TranslationKey, t } from './locales';
+import { Language, t } from './locales';
 import { logger } from './logger';
-import { notify } from './notify';
 
 const execPromise = promisify(exec);
 
@@ -18,12 +17,9 @@ export default class VoiceToTextPlugin extends Plugin {
 	record_button: HTMLButtonElement | null = null;
 	record_button_text: HTMLButtonElement | null = null;
 
-	notify: (key: TranslationKey | string) => void;
-
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
 
-		this.notify = notify.bind(this);
 		this.plugin_path = `${this.app.vault.adapter.basePath}/.obsidian/plugins/voice-to-text`;
 	}
 
@@ -56,7 +52,7 @@ export default class VoiceToTextPlugin extends Plugin {
 			this.lang = 'en';
 		}
 
-		logger('setting interface plugin lang: ', this.lang);
+		logger(`setting interface plugin lang: ${this.lang}`);
 	}
 
 	addRecordButtonToEditor(markdownView: MarkdownView) {
@@ -166,9 +162,12 @@ export default class VoiceToTextPlugin extends Plugin {
 
 			this.is_processing = false;
 
-			this.notify('transcriptionCompleted');
+			const transcriptionCompletedText = t('transcriptionCompleted')
+
+			new Notice(transcriptionCompletedText);
+			logger(transcriptionCompletedText);
 		} catch (error: any) {
-			this.notify(`${t('error')} ${error.message}`);
+			new Notice(`${t('error')} ${error.message}`);
 			console.error(error);
 
 			this.record_button!.classList.remove('voice-to-text-button--active', 'voice-to-text-button--processing');
