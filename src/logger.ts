@@ -1,16 +1,71 @@
-import process from 'process';
+import { appendFile, statSync, renameSync, existsSync } from 'fs';
+import { promisify } from 'util';
 
-const isProd = (process.argv[2] === "production");
+const appendFileAsync = promisify(appendFile);
 
-export function logger(message: string): void {
-	const text = `${message} - datetime: ${new Date().toISOString()}`;
+interface LoggerOptions {
+	level: 'info' | 'warn' | 'error';
+	message: string;
+}
 
-	if (!isProd) {
-		console.log(text);
+const MAX_LOG_SIZE = 1 * 1024 * 1024; // 1 MB
+const LOG_FILE = 'voice-to-text.log';
+const LOG_FILE_BACKUP = 'voice-to-text.log.bak';
+
+function rotateLogs(pluginPath: string) {
+	const logFilePath = `${pluginPath}/${LOG_FILE}`;
+	const backupFilePath = `${pluginPath}/${LOG_FILE_BACKUP}`;
+
+	try {
+		if (existsSync(logFilePath)) {
+			const stats = statSync(logFilePath);
+
+			if (stats.size >= MAX_LOG_SIZE) {
+				renameSync(logFilePath, backupFilePath);
+			}
+		}
+	} catch (error) {
+		console.error(`Failed to rotate logs: ${error}`);
+	}
+}
+
+export async function logger(pluginPath: string, options: string | LoggerOptions) {
+	const timestamp = new Date().toISOString();
+	let level: string;
+	let message: string;
+
+	if (typeof options === 'string') {
+		level = 'info';
+		message = options;
+	} else {
+		level = options.level;
+		message = options.message;
 	}
 
+	const logString = `[${timestamp}] [${level.toUpperCase()}] ${message}\n`;
+	const logFilePath = `${pluginPath}/${LOG_FILE}`;
 
-	// todo в файл логов записывать инфу
-	// todo в режиме разработки писать в консоль и в логи
-	// todo в режиме прода писать только в логи
+	try {
+		rotateLogs(pluginPath);
+
+		await appendFileAsync(logFilePath, logString, 'utf8');
+	} catch (error) {
+		console.error(`Failed to write to log file: ${error}`);
+	}
+
+	switch (level) {
+		case 'info':
+			console.log(logString);
+			break;
+		case 'warn':
+			console.warn(logString);
+			break;
+		case 'error':
+			console.error(logString);
+			break;
+	}
 }
+
+export const logInfo = (pluginPath: string, message: string) => logger(pluginPath, { level: 'info', message });
+export const logWarn = (pluginPath: string, message: string) => logger(pluginPath, { level: 'warn', message });
+export const logError = (pluginPath: string, message: string) => logger(pluginPath, { level: 'error', message });
