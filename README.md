@@ -19,6 +19,28 @@ This plugin allows you to record audio and transcribe it into text, appending it
    - See [Install Dependencies](https://github.com/DanilChugaev/voice-to-text-obsidian-plugin/blob/master/Dependencies.md) for detailed instructions on setting up the required tools.
 4. Enable the plugin in Obsidian: `Settings > Community Plugins > Enable Voice to Text`.
 
+## Install Dependencies using Installation Scripts
+
+Download the appropriate script from the `scripts/` folder in the repository and run it:
+
+### Ubuntu/Debian:
+
+```bash
+  chmod +x scripts/install-dependencies.sh
+  ./scripts/install-dependencies.sh
+```
+
+### macOS:
+
+```bash
+chmod +x scripts/install-dependencies.sh
+./scripts/install-dependencies.sh
+```
+
+### Windows:
+
+- Right-click scripts/install-dependencies.bat and select "Run as administrator".
+
 ## Usage
 - Open a note in Source Mode.
 - Click the 🎙️ button to start recording.
