@@ -10,7 +10,8 @@ if you want to view the source, please visit the github repository of this plugi
 */
 `;
 
-const isProd = (process.argv[2] === "production");
+const mode = process.argv[2] || 'development';
+const isProd = mode === 'production';
 
 const context = await esbuild.context({
 	banner: {
@@ -41,6 +42,9 @@ const context = await esbuild.context({
 	treeShaking: true,
 	outfile: "dist/main.js",
 	minify: isProd,
+	define: {
+		'process.env.NODE_ENV': JSON.stringify(mode),
+	},
 });
 
 async function postBuild() {

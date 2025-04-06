@@ -2,6 +2,7 @@ import { appendFile, statSync, renameSync, existsSync } from 'fs';
 import { promisify } from 'util';
 
 const appendFileAsync = promisify(appendFile);
+const isProd = process.env.NODE_ENV === 'production';
 
 interface LoggerOptions {
 	level: 'info' | 'warn' | 'error';
@@ -66,6 +67,14 @@ export async function logger(pluginPath: string, options: string | LoggerOptions
 	}
 }
 
-export const logInfo = (pluginPath: string, message: string) => logger(pluginPath, { level: 'info', message });
-export const logWarn = (pluginPath: string, message: string) => logger(pluginPath, { level: 'warn', message });
+export const logInfo = (pluginPath: string, message: string) => {
+	if (!isProd) {
+		logger(pluginPath, { level: 'info', message });
+	}
+};
+export const logWarn = (pluginPath: string, message: string) => {
+	if (!isProd) {
+		logger(pluginPath, { level: 'warn', message });
+	}
+}
 export const logError = (pluginPath: string, message: string) => logger(pluginPath, { level: 'error', message });
