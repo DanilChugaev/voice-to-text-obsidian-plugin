@@ -14,7 +14,7 @@ export default class VoiceToTextPlugin extends Plugin {
 	is_processing = false;
 	editor_element: Element | null = null;
 	record_button: HTMLButtonElement | null = null;
-	record_button_text: HTMLButtonElement | null = null;
+	record_button_text: HTMLElement | null = null;
 
 	constructor(app: App, manifest: PluginManifest) {
 		super(app, manifest);
@@ -60,24 +60,25 @@ export default class VoiceToTextPlugin extends Plugin {
 		if (!this.record_button) {
 			await logInfo(this.plugin_path, 'Creating new record button');
 
-			this.record_button = document.createElement('button');
-			this.record_button.classList.add('voice-to-text-button');
-			this.record_button.innerHTML = `
-				<svg
-				  xmlns="http://www.w3.org/2000/svg"
-				  width="20"
-				  height="20"
-				  viewBox="0 0 47.964 47.965"
-				  class="voice-to-text-button__record-icon"
-				>
-				  <path d="M23.982 35.268c5.531 0 10.033-4.635 10.033-10.332V10.333C34.015 4.635 29.513 0 23.982 0 18.45 0 13.95 4.635 13.95 10.333v14.604c.001 5.696 4.501 10.331 10.032 10.331zm5.238-10.33c0 2.974-2.35 5.395-5.238 5.395s-5.238-2.42-5.238-5.395V10.333c0-2.974 2.35-5.395 5.238-5.395s5.238 2.42 5.238 5.395v14.605z" fill="currentColor"/>
-				  <path d="M40.125 29.994c0-1.361-1.222-2.469-2.72-2.469-1.5 0-2.721 1.107-2.721 2.469 0 4.042-3.621 7.329-8.074 7.329h-5.257c-4.453 0-8.074-3.287-8.074-7.329 0-1.361-1.221-2.469-2.721-2.469-1.499 0-2.719 1.107-2.719 2.469 0 6.736 6.014 12.221 13.424 12.266v.766h-5.944c-1.499 0-2.72 1.107-2.72 2.47s1.221 2.47 2.72 2.47h17.325c1.5 0 2.721-1.107 2.721-2.47s-1.221-2.47-2.721-2.47h-5.942v-.766c7.409-.045 13.423-5.53 13.423-12.266z" fill="currentColor"/>
-				</svg>
-				<span class="voice-to-text-button__stop-icon"></span>
-				<span class="voice-to-text-button__recording-text">${t('startRecording')}</span>
-			  `;
+			this.record_button = this.editor_element.createEl('button', {
+				cls: 'voice-to-text-button',
+			});
 
-			this.record_button_text = this.record_button.querySelector('.voice-to-text-button__recording-text');
+			const recordIcon = this.record_button.createEl('span', {
+				cls: 'voice-to-text-button__record-icon',
+			});
+			const stopIcon = this.record_button.createEl('span', {
+				cls: 'voice-to-text-button__stop-icon',
+			});
+
+			this.record_button_text = this.record_button.createEl('span', {
+				cls: 'voice-to-text-button__recording-text',
+				text: t('startRecording'),
+			});
+
+			this.record_button.appendChild(recordIcon);
+			this.record_button.appendChild(stopIcon);
+			this.record_button.appendChild(this.record_button_text);
 
 			this.record_button.addEventListener('click', async () => {
 				if (!this.is_recording && !this.is_processing) {
